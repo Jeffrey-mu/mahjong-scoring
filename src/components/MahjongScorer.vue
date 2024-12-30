@@ -1,10 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-2 sm:p-4">
+  <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-2 sm:p-4">
     <div class="max-w-4xl mx-auto">
       <!-- Header - 优化质感 -->
       <div class="bg-white/10 backdrop-blur-lg rounded-xl shadow-xl border border-white/20 p-3 sm:p-4 mb-4 sm:mb-8">
         <div class="flex justify-between items-center mb-3">
-          <h1 class="text-lg sm:text-xl font-bold text-white">麻将记分</h1>
+          <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-200 bg-clip-text text-transparent drop-shadow-[0_0_3px_rgba(234,179,8,0.3)]">
+            麻将记分
+          </h1>
           <div class="flex gap-1 sm:gap-2">
             <button 
               @click="showSettings = true"
@@ -24,11 +26,11 @@
             <button 
               @click="exportData"
               class="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 
-                     bg-gradient-to-r from-blue-600/90 to-blue-500/90
-                     hover:from-blue-500/90 hover:to-blue-400/90
-                     border border-blue-400/20 rounded-lg transition-all duration-200
-                     shadow-[0_0_15px_rgba(59,130,246,0.3)]
-                     hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]
+                     bg-gradient-to-r from-indigo-600/90 to-indigo-500/90
+                     hover:from-indigo-500/90 hover:to-indigo-400/90
+                     border border-indigo-400/20 rounded-lg transition-all duration-200
+                     shadow-[0_0_15px_rgba(99,102,241,0.3)]
+                     hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]
                      active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/90" viewBox="0 0 20 20" fill="currentColor">
@@ -39,11 +41,11 @@
             <button 
               @click="resetScores"
               class="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 
-                     bg-gradient-to-r from-rose-600/90 to-rose-500/90
-                     hover:from-rose-500/90 hover:to-rose-400/90
-                     border border-rose-400/20 rounded-lg transition-all duration-200
-                     shadow-[0_0_15px_rgba(244,63,94,0.3)]
-                     hover:shadow-[0_0_20px_rgba(244,63,94,0.4)]
+                     bg-gradient-to-r from-amber-600/90 to-amber-500/90
+                     hover:from-amber-500/90 hover:to-amber-400/90
+                     border border-amber-400/20 rounded-lg transition-all duration-200
+                     shadow-[0_0_15px_rgba(245,158,11,0.3)]
+                     hover:shadow-[0_0_20px_rgba(245,158,11,0.4)]
                      active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/90" viewBox="0 0 20 20" fill="currentColor">
@@ -55,14 +57,14 @@
         </div>
 
         <!-- 基础信息展示 - 优化质感 -->
-        <div class="grid grid-cols-2 sm:flex sm:items-center sm:justify-between text-xs sm:text-sm text-gray-300">
+        <div class="grid grid-cols-2 sm:flex sm:items-center sm:justify-between text-xs sm:text-sm">
           <div class="flex flex-col sm:flex-row sm:gap-4">
-            <span>基础分：{{ baseScore }}元</span>
-            <span>庄家：{{ players[banker].name }}</span>
-            <span>轮庄：{{ autoCycleBanker ? '自动' : '手动' }}</span>
+            <span class="text-gray-300/90 drop-shadow-[0_0_2px_rgba(255,255,255,0.1)]">基础分：{{ baseScore }}元</span>
+            <span class="text-gray-300/90 drop-shadow-[0_0_2px_rgba(255,255,255,0.1)]">庄家：{{ players[banker].name }}</span>
+            <span class="text-gray-300/90 drop-shadow-[0_0_2px_rgba(255,255,255,0.1)]">轮庄：{{ autoCycleBanker ? '自动' : '手动' }}</span>
           </div>
           <div class="text-right sm:text-left">
-            第{{ history.length + 1 }}圈
+            <span class="text-gray-300/90">第{{ history.length + 1 }}圈</span>
           </div>
         </div>
       </div>
@@ -70,17 +72,25 @@
       <!-- 玩家分数展示 - 优化质感 -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
         <div v-for="(player, index) in players" :key="index" 
-             class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-3 sm:p-4 text-center transform transition-all duration-200 hover:scale-102 active:scale-98 hover:bg-white/20"
-             :class="{'ring-2 ring-yellow-400/80': index === banker}">
+             class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-3 sm:p-4 
+                    text-center transform transition-all duration-300 hover:scale-102 active:scale-98 hover:bg-white/20
+                    hover:shadow-[0_0_25px_rgba(255,255,255,0.1)]"
+                 :class="{'ring-2 ring-yellow-400/80 shadow-[0_0_20px_rgba(234,179,8,0.2)]': index === banker}">
           <div class="flex items-center justify-center gap-1 mb-1">
-            <h2 class="text-base sm:text-xl font-bold text-white">{{ player.name }}</h2>
+            <h2 class="text-base sm:text-xl font-bold text-white/95 drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">
+              {{ player.name }}
+            </h2>
             <span v-if="index === banker" 
-                  class="bg-yellow-500/80 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  class="bg-gradient-to-r from-yellow-500/90 via-amber-500/90 to-yellow-500/90 text-white/95 
+                         text-xs px-2 py-0.5 rounded-full border border-yellow-400/30
+                         shadow-[0_0_10px_rgba(234,179,8,0.3)]">
               庄
             </span>
           </div>
           <p class="text-xl sm:text-2xl font-medium" 
-             :class="player.score >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+             :class="player.score >= 0 
+               ? 'text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.3)]' 
+               : 'text-rose-400 drop-shadow-[0_0_3px_rgba(251,113,133,0.3)]'">
             {{ player.score }}
           </p>
         </div>
@@ -177,7 +187,8 @@
       </div>
 
       <!-- 记分表单 - 优化质感 -->
-      <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6">
+      <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6
+                  hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300">
         <h3 class="text-base sm:text-lg font-bold text-white mb-4">记录分数</h3>
         
         <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
@@ -185,7 +196,7 @@
           <div class="space-y-4">
             <!-- 赢家选择 -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300">赢家</label>
+              <label class="block text-sm font-medium text-gray-300/90">赢家</label>
               <div class="grid grid-cols-4 gap-1 sm:gap-2">
                 <button 
                   v-for="(player, index) in players" 
@@ -203,7 +214,7 @@
 
             <!-- 胡牌方式 -->
             <div v-if="selectedWinner !== null" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300">胡牌方式</label>
+              <label class="block text-sm font-medium text-gray-300/90">胡牌方式</label>
               <div class="flex gap-2">
                 <button 
                   @click="winType = 'dianpao'"
@@ -224,7 +235,7 @@
 
             <!-- 点炮人选择 -->
             <div v-if="winType === 'dianpao'" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300">点炮人</label>
+              <label class="block text-sm font-medium text-gray-300/90">点炮人</label>
               <div class="grid grid-cols-4 gap-1 sm:gap-2">
                 <button 
                   v-for="(player, index) in players" 
@@ -249,47 +260,109 @@
           <div v-if="canInputScore" class="space-y-4">
             <!-- 分数输入 -->
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300">赢分</label>
-              <div class="flex gap-2">
-                <input 
-                  type="number"
-                  v-model="winAmount"
-                  class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500/50 text-sm text-white placeholder-gray-400"
-                  placeholder="输入赢分"
-                >
-                <button 
-                  @click="calculateScores"
-                  class="px-4 py-2 bg-gradient-to-r from-blue-600/90 to-blue-500/90
-                         hover:from-blue-500/90 hover:to-blue-400/90
-                         border border-blue-400/20 rounded-lg text-sm text-white/90
-                         transition-all duration-200
-                         shadow-[0_0_15px_rgba(59,130,246,0.3)]
-                         hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]
-                         active:scale-95"
-                >
-                  计算
-                </button>
+              <label class="block text-sm font-medium text-gray-300/90">赢分</label>
+              <div class="space-y-4">
+                <!-- 输入框和计算按钮 -->
+                <div class="flex gap-2">
+                  <input 
+                    type="number"
+                    v-model="winAmount"
+                    class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg 
+                           focus:ring-2 focus:ring-blue-500/50 text-sm text-white 
+                           placeholder-gray-400/70"
+                    placeholder="输入赢分"
+                  >
+                  <button 
+                    @click="calculateScores"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-600/90 to-blue-500/90
+                           hover:from-blue-500/90 hover:to-blue-400/90
+                           border border-blue-400/20 rounded-lg text-sm text-white/90
+                           transition-all duration-200
+                           shadow-[0_0_15px_rgba(59,130,246,0.3)]
+                           hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]
+                           active:scale-95"
+                  >
+                    计算
+                  </button>
+                </div>
+
+                <!-- 滑块器 -->
+                <div class="space-y-2">
+                  <div class="flex justify-between text-xs text-gray-400/90">
+                    <span>0</span>
+                    <span>{{ maxSliderValue }}</span>
+                  </div>
+                  <div class="relative group">
+                    <input 
+                      type="range"
+                      v-model="winAmount"
+                      :min="0"
+                      :max="maxSliderValue"
+                      step="5"
+                      class="w-full h-3 bg-white/10 rounded-lg appearance-none cursor-pointer
+                             focus:outline-none focus:ring-2 focus:ring-blue-500/50
+                             [&::-webkit-slider-thumb]:appearance-none
+                             [&::-webkit-slider-thumb]:w-6
+                             [&::-webkit-slider-thumb]:h-6
+                             [&::-webkit-slider-thumb]:rounded-full
+                             [&::-webkit-slider-thumb]:bg-gradient-to-r
+                             [&::-webkit-slider-thumb]:from-blue-500
+                             [&::-webkit-slider-thumb]:to-blue-400
+                             [&::-webkit-slider-thumb]:border
+                             [&::-webkit-slider-thumb]:border-blue-400/20
+                             [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(59,130,246,0.3)]
+                             [&::-webkit-slider-thumb]:transition-all
+                             [&::-webkit-slider-thumb]:hover:scale-110
+                             group-hover:[&::-webkit-slider-thumb]:shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+                    >
+                    <!-- 当前值提示 -->
+                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2
+                                bg-blue-500/90 text-white/90 px-2 py-1 rounded text-xs
+                                shadow-[0_0_10px_rgba(59,130,246,0.3)]
+                                transition-opacity duration-200
+                                opacity-0 group-hover:opacity-100">
+                      {{ winAmount }}
+                    </div>
+                  </div>
+                  <!-- 快速选择按钮 -->
+                  <div class="flex gap-2 mt-2">
+                    <button 
+                      v-for="value in quickSelectValues"
+                      :key="value"
+                      @click="handleQuickSelect(value)"
+                      class="flex-1 px-2 py-1 text-xs rounded-lg
+                             bg-white/10 hover:bg-white/20 text-gray-300/90
+                             transition-all duration-200
+                             border border-white/10
+                             hover:border-white/20"
+                    >
+                      {{ value }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <!-- 分数预览 -->
             <div v-if="previewScores.length > 0" class="space-y-3">
-              <label class="block text-sm font-medium text-gray-300">分数预览</label>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="block text-sm font-medium text-gray-300/90">分数预览</label>
+              <div class="flex flex-wrap gap-2">
                 <div v-for="(score, index) in previewScores" :key="index"
-                     class="bg-white/5 border border-white/10 p-2 rounded-lg text-center">
-                  <div class="text-xs text-gray-400">{{ players[index].name }}</div>
-                  <div class="text-sm sm:text-base font-medium"
-                       :class="score >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                     class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 flex-1 min-w-[120px]">
+                  <span class="text-sm text-gray-400">{{ players[index].name }}</span>
+                  <span class="text-base font-medium ml-auto"
+                        :class="score >= 0 
+                          ? 'text-emerald-400 drop-shadow-[0_0_2px_rgba(52,211,153,0.2)]' 
+                          : 'text-rose-400 drop-shadow-[0_0_2px_rgba(251,113,133,0.2)]'">
                     {{ score >= 0 ? '+' + score : score }}
-                  </div>
+                  </span>
                 </div>
               </div>
               <button 
                 @click="recordScores"
-                class="w-full px-4 py-2 bg-gradient-to-r from-emerald-600/90 to-emerald-500/90
+                class="w-full bg-gradient-to-r from-emerald-600/90 to-emerald-500/90
                        hover:from-emerald-500/90 hover:to-emerald-400/90
-                       border border-emerald-400/20 rounded-lg text-white/90
+                       border border-emerald-400/20 rounded-lg text-white/90 px-4 py-2
                        transition-all duration-200
                        shadow-[0_0_15px_rgba(16,185,129,0.3)]
                        hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]
@@ -299,21 +372,26 @@
               </button>
             </div>
 
-            <p class="text-xs sm:text-sm text-gray-400">
+            <p class="text-xs sm:text-sm text-gray-400/90">
               庄家{{ selectedWinner === banker ? '赢' : '输' }}分将额外{{ selectedWinner === banker ? '得到' : '扣除' }}基础分({{ baseScore }}元)
             </p>
           </div>
         </div>
       </div>
 
-      <!-- 历史记录 -->
-      <div class="mt-8 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6">
-        <h3 class="text-lg font-bold text-white mb-4">历史记录</h3>
+      <!-- 历史记录 - 优化质感 -->
+      <div class="mt-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6
+                  hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300">
+        <h3 class="text-lg font-bold bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent mb-4">
+          历史记录
+        </h3>
         <div class="space-y-4">
           <div v-for="(record, index) in history" :key="index" 
-               class="bg-white/5 border border-white/10 rounded-lg p-4 transition-all duration-200 hover:bg-white/10">
+               class="bg-white/5 border border-white/10 rounded-lg p-4 
+                      transition-all duration-300 hover:bg-white/10
+                      hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div class="flex justify-between items-center mb-2">
-              <div class="text-sm text-gray-400">
+              <div class="text-sm text-gray-400/90">
                 第{{ history.length - index }}圈 | {{ record.time }}
               </div>
               <div class="text-sm">
@@ -323,17 +401,19 @@
               </div>
             </div>
             <div class="mb-2 text-sm">
-              <span class="text-blue-400">{{ record.winner }}</span>
-              <span class="mx-1 text-gray-400">{{ record.winType === 'zimo' ? '自摸' : '胡' }}</span>
-              <span v-if="record.winType === 'dianpao'" class="text-rose-400">
+              <span class="text-blue-400/95">{{ record.winner }}</span>
+              <span class="mx-1 text-gray-300/90">{{ record.winType === 'zimo' ? '自摸' : '胡' }}</span>
+              <span v-if="record.winType === 'dianpao'" class="text-rose-400/95">
                 {{ record.loser }} 点炮
               </span>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div v-for="(score, playerIndex) in record.scores" :key="playerIndex" 
                    class="flex items-center justify-between sm:justify-start gap-2 bg-white/5 rounded-lg p-2">
-                <span class="text-gray-400">{{ players[playerIndex].name }}</span>
-                <span :class="score >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                <span class="text-gray-400/90">{{ players[playerIndex].name }}</span>
+                <span :class="score >= 0 
+                  ? 'text-emerald-400/95 drop-shadow-[0_0_2px_rgba(52,211,153,0.2)]' 
+                  : 'text-rose-400/95 drop-shadow-[0_0_2px_rgba(251,113,133,0.2)]'">
                   {{ score >= 0 ? '+' + score : score }}
                 </span>
               </div>
@@ -470,13 +550,17 @@ const setBanker = (index: number) => {
 const calculateScores = () => {
   if (selectedWinner.value === null || !winAmount.value) return
   
+  // 确保使用数值类型
+  const amount = Number(winAmount.value)
+  if (isNaN(amount)) return
+
   if (winType.value === 'dianpao' && selectedLoser.value !== null) {
     // 点炮计分
     const winnerIsBanker = selectedWinner.value === banker.value
     const loserIsBanker = selectedLoser.value === banker.value
     
-    let finalWinScore = winAmount.value
-    let finalLoseScore = winAmount.value
+    let finalWinScore = amount
+    let finalLoseScore = amount
 
     // 庄家点炮：输的钱需要加基础分
     if (loserIsBanker) {
@@ -504,7 +588,7 @@ const calculateScores = () => {
         return 0 // 先设为0，后面更新
       }
       
-      let loseScore = winAmount.value
+      let loseScore = amount
       // 如果庄家是输家或赢家，额外加上基础分
       if (index === banker.value || winnerIsBanker) {
         loseScore += baseScore.value
@@ -605,4 +689,89 @@ const getDefaultName = (index: number): string => {
   const defaultNames = ['东', '南', '西', '北']
   return defaultNames[index]
 }
+
+// 滑块最大值
+const maxSliderValue = 100
+
+// 快速选择值
+const quickSelectValues = [5, 10, 20, 50]
+
+// 监听 winAmount 变化，自动计算分数
+watch(winAmount, (newValue) => {
+  if (newValue && canInputScore.value) {
+    // 确保转换为数值类型
+    const amount = Number(newValue)
+    if (!isNaN(amount)) {
+      calculateScores()
+    }
+  }
+})
+
+// 修改快速选择按钮的点击处理
+const handleQuickSelect = (value: number) => {
+  winAmount.value = value
+  calculateScores()
+}
 </script> 
+
+<style>
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+/* 添加全局渐变动画 */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+/* Firefox 滑块样式优化 */
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #2563eb, #3b82f6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-track {
+  background: rgba(255, 255, 255, 0.1);
+  height: 12px;
+  border-radius: 6px;
+}
+
+/* 滑块轨道激活状态 */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, 
+    rgba(59, 130, 246, 0.5) var(--value-percent, 0%), 
+    rgba(255, 255, 255, 0.1) var(--value-percent, 0%)
+  );
+  height: 12px;
+  border-radius: 6px;
+}
+
+/* 增加滑块点击区域 */
+input[type="range"] {
+  padding: 8px 0;
+  margin: -8px 0;
+}
+</style> 
