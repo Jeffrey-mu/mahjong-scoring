@@ -266,11 +266,14 @@
                 <div class="flex gap-2">
                   <input 
                     type="number"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
                     v-model="winAmount"
                     class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg 
                            focus:ring-2 focus:ring-blue-500/50 text-sm text-white 
                            placeholder-gray-400/70"
                     placeholder="输入赢分"
+                    style="-webkit-text-size-adjust: 100%; text-size-adjust: 100%;"
                   >
                   <button 
                     @click="calculateScores"
@@ -773,5 +776,29 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"] {
   padding: 8px 0;
   margin: -8px 0;
+}
+
+/* 禁止 iOS 上的字体大小自动调整 */
+input[type="number"] {
+  font-size: 16px !important;  /* 防止 iOS 缩放 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* 禁用输入框的默认样式 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* 优化触摸体验 */
+* {
+  touch-action: manipulation;
 }
 </style> 
