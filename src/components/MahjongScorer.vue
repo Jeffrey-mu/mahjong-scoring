@@ -314,6 +314,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+type WinType = 'dianpao' | 'zimo' | null
+
 interface Player {
   name: string
   score: number
