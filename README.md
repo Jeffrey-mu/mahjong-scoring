@@ -1,5 +1,28 @@
-# Vue 3 + TypeScript + Vite
+# 麻将计分器 Mahjong Scorer
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+![麻将计分器截图](pc.png)
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+一个简单易用的麻将计分器，帮助您轻松记录和计算麻将游戏的分数。
+
+## 主要功能
+
+- 🎯 支持4人麻将计分
+- 💰 可自定义基础分
+- 🔄 自动/手动轮庄功能  
+- 📊 分数实时预览
+- 📝 完整历史记录
+- 💾 数据导出功能
+- 🎨 优雅的UI设计
+
+## 在线使用
+
+访问 [https://mahjong-scoring-chi.vercel.app/](https://mahjong-scoring-chi.vercel.app/) 即可使用
+
+## 技术栈
+
+- Vue 3
+- TypeScript
+- Tailwind CSS
+- Vite
+
+## 本地开发
