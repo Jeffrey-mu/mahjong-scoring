@@ -433,12 +433,6 @@ const setBanker = (index: number) => {
   banker.value = index
 }
 
-// 计算实际分数
-const calculateActualScore = (playerIndex: number, isBanker: boolean) => {
-  // 基础分 + (庄家额外基础分)
-  return baseScore.value + (isBanker ? baseScore.value : 0)
-}
-
 const calculateScores = () => {
   if (selectedWinner.value === null || !winAmount.value) return
   
