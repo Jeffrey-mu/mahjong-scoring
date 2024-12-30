@@ -1,5 +1,53 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow p-4 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">麻将记分</h1>
+        <div class="flex gap-2">
+          <button 
+            @click="showSettings = true"
+            class="flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+            </svg>
+            <span class="hidden sm:inline">设置</span>
+          </button>
+          <button 
+            @click="exportData"
+            class="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-lg"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            <span class="hidden sm:inline">导出</span>
+          </button>
+          <button 
+            @click="resetScores"
+            class="flex items-center gap-1 px-3 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            <span class="hidden sm:inline">重置</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 基础信息展示 -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600">
+        <div class="flex flex-wrap gap-2 sm:gap-4">
+          <span>基础分：{{ baseScore }}元</span>
+          <span>庄家：{{ players[banker].name }}</span>
+          <span>轮庄：{{ autoCycleBanker ? '自动' : '手动' }}</span>
+        </div>
+        <div class="mt-2 sm:mt-0">
+          第{{ history.length + 1 }}圈
+        </div>
+      </div>
+    </div>
+
     <!-- 玩家分数展示 -->
     <div class="grid grid-cols-4 gap-4 mb-8">
       <div v-for="(player, index) in players" :key="index" 
@@ -18,35 +66,93 @@
       </div>
     </div>
 
-    <!-- 基础分设置 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-4">
-      <h3 class="text-lg font-bold mb-4">基础分设置</h3>
-      <div class="flex items-center gap-4">
-        <input 
-          type="number"
-          v-model="baseScore"
-          class="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-          placeholder="设置基础分"
-        >
-        <span class="text-gray-600">当前基础分：{{ baseScore }}元</span>
-      </div>
-    </div>
+    <!-- 牌桌设置模态框 -->
+    <div v-if="showSettings" 
+         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold">牌桌设置</h3>
+            <button 
+              @click="showSettings = false"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-    <!-- 庄家设置 -->
-    <div class="bg-white rounded-lg shadow p-6 mb-4">
-      <h3 class="text-lg font-bold mb-4">庄家设置</h3>
-      <div class="grid grid-cols-4 gap-4">
-        <button 
-          v-for="(player, index) in players" 
-          :key="index"
-          @click="setBanker(index)"
-          class="px-4 py-2 rounded-lg"
-          :class="banker === index 
-            ? 'bg-yellow-500 text-white' 
-            : 'bg-gray-100 hover:bg-gray-200'"
-        >
-          {{ player.name }}
-        </button>
+          <div class="space-y-6">
+            <!-- 玩家名称设置 -->
+            <div>
+              <label class="text-sm font-medium block mb-2">玩家名称</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div v-for="(player, index) in players" :key="index"
+                     class="flex flex-col gap-1">
+                  <label class="text-xs text-gray-500">{{ getDefaultName(index) }}</label>
+                  <input 
+                    type="text"
+                    v-model="player.name"
+                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-center"
+                    :placeholder="getDefaultName(index)"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- 基础分设置 -->
+            <div>
+              <label class="text-sm font-medium block mb-2">基础分</label>
+              <div class="flex items-center gap-4">
+                <input 
+                  type="number"
+                  v-model="baseScore"
+                  class="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="设置基础分"
+                >
+                <span class="text-gray-600">当前：{{ baseScore }}元</span>
+              </div>
+            </div>
+
+            <!-- 庄家设置 -->
+            <div>
+              <label class="text-sm font-medium block mb-2">庄家设置</label>
+              <div class="space-y-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <button 
+                    v-for="(player, index) in players" 
+                    :key="index"
+                    @click="setBanker(index)"
+                    class="px-4 py-2 rounded-lg"
+                    :class="banker === index 
+                      ? 'bg-yellow-500 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200'"
+                  >
+                    {{ player.name }}
+                  </button>
+                </div>
+                <label class="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    v-model="autoCycleBanker"
+                    class="rounded text-blue-500"
+                  >
+                  <span class="text-sm">自动轮庄</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex justify-end">
+            <button 
+              @click="showSettings = false"
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              确定
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -54,108 +160,115 @@
     <div class="bg-white rounded-lg shadow p-6">
       <h3 class="text-lg font-bold mb-4">记录分数</h3>
       
-      <!-- 赢家选择 -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-2">赢家</label>
-        <div class="grid grid-cols-4 gap-4">
-          <button 
-            v-for="(player, index) in players" 
-            :key="index"
-            @click="selectWinner(index)"
-            class="px-4 py-2 rounded-lg"
-            :class="selectedWinner === index 
-              ? 'bg-blue-500 text-white' 
-              : 'bg-gray-100 hover:bg-gray-200'"
-          >
-            {{ player.name }}
-          </button>
-        </div>
-      </div>
-
-      <!-- 点炮/自摸选择 -->
-      <div v-if="selectedWinner !== null" class="mb-4">
-        <label class="block text-sm font-medium mb-2">胡牌方式</label>
-        <div class="flex gap-4 mb-4">
-          <button 
-            @click="winType = 'dianpao'"
-            class="px-4 py-2 rounded-lg"
-            :class="winType === 'dianpao' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'"
-          >
-            点炮
-          </button>
-          <button 
-            @click="winType = 'zimo'"
-            class="px-4 py-2 rounded-lg"
-            :class="winType === 'zimo' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'"
-          >
-            自摸
-          </button>
-        </div>
-
-        <!-- 点炮人选择（仅在点炮时显示） -->
-        <div v-if="winType === 'dianpao'" class="mb-4">
-          <label class="block text-sm font-medium mb-2">点炮人</label>
-          <div class="grid grid-cols-4 gap-4">
-            <button 
-              v-for="(player, index) in players" 
-              :key="index"
-              @click="selectLoser(index)"
-              class="px-4 py-2 rounded-lg"
-              :class="[
-                index === selectedWinner ? 'opacity-50 cursor-not-allowed' : '',
-                selectedLoser === index 
-                  ? 'bg-red-500 text-white' 
-                  : 'bg-gray-100 hover:bg-gray-200'
-              ]"
-              :disabled="index === selectedWinner"
-            >
-              {{ player.name }}
-            </button>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 左侧：基本选择 -->
+        <div class="space-y-4">
+          <!-- 赢家选择 -->
+          <div>
+            <label class="block text-sm font-medium mb-2">赢家</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button 
+                v-for="(player, index) in players" 
+                :key="index"
+                @click="selectWinner(index)"
+                class="px-3 py-2 rounded-lg text-sm"
+                :class="selectedWinner === index 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-100 hover:bg-gray-200'"
+              >
+                {{ player.name }}
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <!-- 赢分输入 -->
-      <div v-if="canInputScore" class="mb-4">
-        <label class="block text-sm font-medium mb-2">赢分</label>
-        <div class="flex gap-4">
-          <input 
-            type="number"
-            v-model="winAmount"
-            class="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="输入赢分"
-          >
-          <button 
-            @click="calculateScores"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            计算分数
-          </button>
-        </div>
-        <p class="text-sm text-gray-500 mt-1">
-          庄家{{ selectedWinner === banker ? '赢' : '输' }}分将额外{{ selectedWinner === banker ? '得到' : '扣除' }}基础分({{ baseScore }}元)
-        </p>
-      </div>
+          <!-- 胡牌方式 -->
+          <div v-if="selectedWinner !== null">
+            <label class="block text-sm font-medium mb-2">胡牌方式</label>
+            <div class="flex gap-4">
+              <button 
+                @click="winType = 'dianpao'"
+                class="flex-1 px-4 py-2 rounded-lg text-sm"
+                :class="winType === 'dianpao' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'"
+              >
+                点炮
+              </button>
+              <button 
+                @click="winType = 'zimo'"
+                class="flex-1 px-4 py-2 rounded-lg text-sm"
+                :class="winType === 'zimo' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'"
+              >
+                自摸
+              </button>
+            </div>
+          </div>
 
-      <!-- 分数预览 -->
-      <div v-if="previewScores.length > 0" class="mb-4">
-        <h4 class="text-sm font-medium mb-2">分数预览</h4>
-        <div class="grid grid-cols-4 gap-4">
-          <div v-for="(score, index) in previewScores" :key="index"
-               class="text-center">
-            <div class="font-medium">{{ players[index].name }}</div>
-            <div :class="score >= 0 ? 'text-green-600' : 'text-red-600'">
-              {{ score >= 0 ? '+' + score : score }}
+          <!-- 点炮人选择 -->
+          <div v-if="winType === 'dianpao'">
+            <label class="block text-sm font-medium mb-2">点炮人</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button 
+                v-for="(player, index) in players" 
+                :key="index"
+                @click="selectLoser(index)"
+                class="px-3 py-2 rounded-lg text-sm"
+                :class="[
+                  index === selectedWinner ? 'opacity-50 cursor-not-allowed' : '',
+                  selectedLoser === index 
+                    ? 'bg-red-500 text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                ]"
+                :disabled="index === selectedWinner"
+              >
+                {{ player.name }}
+              </button>
             </div>
           </div>
         </div>
-        <div class="mt-4 flex justify-center">
-          <button 
-            @click="recordScores"
-            class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
-          >
-            确认记录
-          </button>
+
+        <!-- 右侧：分数输入和预览 -->
+        <div v-if="canInputScore" class="space-y-4">
+          <!-- 分数输入 -->
+          <div>
+            <label class="block text-sm font-medium mb-2">赢分</label>
+            <div class="flex gap-4">
+              <input 
+                type="number"
+                v-model="winAmount"
+                class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="输入赢分"
+              >
+              <button 
+                @click="calculateScores"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                计算
+              </button>
+            </div>
+          </div>
+
+          <!-- 分数预览 -->
+          <div v-if="previewScores.length > 0">
+            <label class="block text-sm font-medium mb-2">分数预览</label>
+            <div class="grid grid-cols-4 gap-2 mb-4">
+              <div v-for="(score, index) in previewScores" :key="index"
+                   class="bg-gray-50 p-2 rounded-lg text-center">
+                <div class="text-sm text-gray-600">{{ players[index].name }}</div>
+                <div :class="score >= 0 ? 'text-green-600' : 'text-red-600'">
+                  {{ score >= 0 ? '+' + score : score }}
+                </div>
+              </div>
+            </div>
+            <button 
+              @click="recordScores"
+              class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+            >
+              确认记录
+            </button>
+          </div>
+
+          <p class="text-sm text-gray-500">
+            庄家{{ selectedWinner === banker ? '赢' : '输' }}分将额外{{ selectedWinner === banker ? '得到' : '扣除' }}基础分({{ baseScore }}元)
+          </p>
         </div>
       </div>
     </div>
@@ -195,22 +308,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 添加重置按钮 -->
-    <div class="mt-4 flex justify-end gap-4">
-      <button 
-        @click="exportData"
-        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-      >
-        导出记录
-      </button>
-      <button 
-        @click="resetScores"
-        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-      >
-        重置所有分数
-      </button>
-    </div>
   </div>
 </template>
 
@@ -243,6 +340,7 @@ const loadFromStorage = () => {
       banker.value = state.banker
       baseScore.value = state.baseScore
       history.value = state.history
+      autoCycleBanker.value = state.autoCycleBanker ?? true
     }
   } catch (error) {
     console.error('Failed to load state from storage:', error)
@@ -256,7 +354,8 @@ const saveToStorage = () => {
       players: players.value,
       banker: banker.value,
       baseScore: baseScore.value,
-      history: history.value
+      history: history.value,
+      autoCycleBanker: autoCycleBanker.value
     }
     localStorage.setItem('mahjongState', JSON.stringify(state))
   } catch (error) {
@@ -280,6 +379,8 @@ const winType = ref<WinType>(null)
 const winAmount = ref<number>(0)
 const previewScores = ref<number[]>([])
 const history = ref<Record[]>([])
+const showSettings = ref(false)
+const autoCycleBanker = ref(true)
 
 // 监听数据变化，自动保存
 watch(
@@ -314,12 +415,14 @@ const selectWinner = (index: number) => {
   selectedLoser.value = null
   winType.value = null
   previewScores.value = []
+  winAmount.value = 0  // 重置赢分
 }
 
 const selectLoser = (index: number) => {
   if (index !== selectedWinner.value) {
     selectedLoser.value = index
     previewScores.value = []
+    winAmount.value = 0  // 重置赢分
   }
 }
 
@@ -406,6 +509,15 @@ const recordScores = () => {
     round: history.value.length + 1
   })
 
+  // 自动轮庄逻辑
+  if (autoCycleBanker.value) {
+    // 如果当前庄家胡牌（无论点炮还是自摸），庄家连庄
+    if (selectedWinner.value !== banker.value) {
+      // 不是庄家胡牌，庄家转移给下一位
+      banker.value = (banker.value + 1) % players.value.length
+    }
+  }
+
   // 重置
   selectedWinner.value = null
   selectedLoser.value = null
@@ -416,7 +528,11 @@ const recordScores = () => {
 
 const resetScores = () => {
   if (confirm('确定要重置所有数据吗？这将清除所有历史记录。')) {
-    players.value.forEach(player => player.score = 0)
+    // 只重置分数，保留名称
+    players.value = players.value.map(player => ({
+      name: player.name,  // 保留原有名称
+      score: 0
+    }))
     history.value = []
     selectedWinner.value = null
     selectedLoser.value = null
@@ -425,6 +541,8 @@ const resetScores = () => {
     previewScores.value = []
     // 清除本地存储
     localStorage.removeItem('mahjongState')
+    // 重置后立即保存当前状态到本地存储
+    saveToStorage()
   }
 }
 
@@ -450,5 +568,11 @@ const exportData = () => {
     console.error('Failed to export data:', error)
     alert('导出数据失败')
   }
+}
+
+// 添加获取默认名称的函数
+const getDefaultName = (index: number): string => {
+  const defaultNames = ['东', '南', '西', '北']
+  return defaultNames[index]
 }
 </script> 
