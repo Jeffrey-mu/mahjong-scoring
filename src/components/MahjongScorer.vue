@@ -88,7 +88,7 @@
 
       <!-- 玩家分数展示 - 优化质感 -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
-        <div v-for="(player, index) in players" :key="index" class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-3 sm:p-4
+        <div v-for="(player, index) in players" :key="index" @click="selectWinner(index)" class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-3 sm:p-4
                     text-center transform transition-all duration-300 hover:scale-102 active:scale-98 hover:bg-white/20
                     hover:shadow-[0_0_25px_rgba(255,255,255,0.1)]"
           :class="{ 'ring-2 ring-yellow-400/80 shadow-[0_0_20px_rgba(234,179,8,0.2)]': index === banker }">
@@ -182,91 +182,86 @@
         </div>
       </div>
 
-      <!-- 记分表单 - 优化质感 -->
-      <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6
-                  hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300">
-        <h3 class="text-base sm:text-lg font-bold text-white mb-4">记录分数</h3>
-
-        <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
-          <!-- 左侧：基本选择 -->
-          <div class="space-y-4">
-            <!-- 赢家选择 -->
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300/90">赢家</label>
-              <div class="grid grid-cols-4 gap-1 sm:gap-2">
-                <button v-for="(player, index) in players" :key="index" @click="selectWinner(index)"
-                  class="px-2 py-2 sm:px-3 rounded-lg text-xs sm:text-sm transition-all" :class="selectedWinner === index
-                    ? 'bg-blue-500/80 text-white shadow-lg'
-                    : 'bg-white/10 hover:bg-white/20 text-gray-300'">
-                  {{ player.name }}
-                </button>
-              </div>
+      <div v-if="selectedWinner !== null"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" id="edit_dialog"
+        @click="closeTheScoringPopUpWindow">
+        <div
+          class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6
+                  hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300 min-w-[300px] min-h-[300px]">
+          <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 relative">
+            <div class="cursor-pointer text-white absolute right-0 top-0" @click="closeTheScoringPopUpWindow(true)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                <path fill="currentColor"
+                  d="M15.1 3.1L12.9.9L8 5.9L3.1.9L.9 3.1l5 4.9l-5 4.9l2.2 2.2l4.9-5l4.9 5l2.2-2.2l-5-4.9z" />
+              </svg>
             </div>
-
-            <!-- 胡牌方式 -->
-            <div v-if="selectedWinner !== null" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300/90">胡牌方式</label>
-              <div class="flex gap-2">
-                <button @click="winType = 'dianpao'"
-                  class="flex-1 px-3 py-2 rounded-lg text-xs sm:text-sm transition-all"
-                  :class="winType === 'dianpao' ? 'bg-blue-500/80 text-white shadow-lg' : 'bg-white/10 hover:bg-white/20 text-gray-300'">
-                  点炮
-                </button>
-                <button @click="winType = 'zimo'" class="flex-1 px-3 py-2 rounded-lg text-xs sm:text-sm transition-all"
-                  :class="winType === 'zimo' ? 'bg-blue-500/80 text-white shadow-lg' : 'bg-white/10 hover:bg-white/20 text-gray-300'">
-                  自摸
-                </button>
-              </div>
-            </div>
-
-            <!-- 点炮人选择 -->
-            <div v-if="winType === 'dianpao'" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300/90">点炮人</label>
-              <div class="grid grid-cols-4 gap-1 sm:gap-2">
-                <button v-for="(player, index) in players" :key="index" @click="selectLoser(index)"
-                  class="px-2 py-2 sm:px-3 rounded-lg text-xs sm:text-sm transition-all" :class="[
-                    index === selectedWinner ? 'opacity-50 cursor-not-allowed' : '',
-                    selectedLoser === index
-                      ? 'bg-rose-500/80 text-white shadow-lg'
-                      : 'bg-white/10 hover:bg-white/20 text-gray-300'
-                  ]" :disabled="index === selectedWinner">
-                  {{ player.name }}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 右侧：分数输入和预览 -->
-          <div v-if="canInputScore" class="space-y-4">
-            <!-- 分数输入 -->
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-300/90">赢分</label>
-              <div class="space-y-4">
-                <!-- 输入框和计算按钮 -->
+            <!-- 左侧：基本选择 -->
+            <div class="space-y-4">
+              <!-- 胡牌方式 -->
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300/90">胡牌方式</label>
                 <div class="flex gap-2">
-                  <input type="number" inputmode="numeric" pattern="[0-9]*" v-model="winAmount" class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg
+                  <button @click="winType = 'dianpao'"
+                    class="flex-1 px-3 py-2 rounded-lg text-xs sm:text-sm transition-all"
+                    :class="winType === 'dianpao' ? 'bg-blue-500/80 text-white shadow-lg' : 'bg-white/10 hover:bg-white/20 text-gray-300'">
+                    点炮
+                  </button>
+                  <button @click="winType = 'zimo'"
+                    class="flex-1 px-3 py-2 rounded-lg text-xs sm:text-sm transition-all"
+                    :class="winType === 'zimo' ? 'bg-blue-500/80 text-white shadow-lg' : 'bg-white/10 hover:bg-white/20 text-gray-300'">
+                    自摸
+                  </button>
+                </div>
+              </div>
+
+              <!-- 点炮人选择 -->
+              <div v-if="winType === 'dianpao'" class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300/90">点炮人</label>
+                <div class="grid grid-cols-4 gap-1 sm:gap-2">
+                  <button v-for="(player, index) in players" :key="index" @click="selectLoser(index)"
+                    class="px-2 py-2 sm:px-3 rounded-lg text-xs sm:text-sm transition-all" :class="[
+                      index === selectedWinner ? 'opacity-50 cursor-not-allowed' : '',
+                      selectedLoser === index
+                        ? 'bg-rose-500/80 text-white shadow-lg'
+                        : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                    ]" :disabled="index === selectedWinner">
+                    {{ player.name }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右侧：分数输入和预览 -->
+            <div v-if="canInputScore" class="space-y-4">
+              <!-- 分数输入 -->
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300/90">赢分</label>
+                <div class="space-y-4">
+                  <!-- 输入框和计算按钮 -->
+                  <div class="flex gap-2">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" v-model="winAmount" class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg
                            focus:ring-2 focus:ring-blue-500/50 text-sm text-white
                            placeholder-gray-400/70" placeholder="输入赢分"
-                    style="-webkit-text-size-adjust: 100%; text-size-adjust: 100%;">
-                  <button @click="recordScores" class="w-fit bg-gradient-to-r from-emerald-600/90 to-emerald-500/90
+                      style="-webkit-text-size-adjust: 100%; text-size-adjust: 100%;">
+                    <button @click="recordScores" class="w-fit bg-gradient-to-r from-emerald-600/90 to-emerald-500/90
                        hover:from-emerald-500/90 hover:to-emerald-400/90
                        border border-emerald-400/20 rounded-lg text-white/90 px-4 py-2
                        transition-all duration-200
                        shadow-[0_0_15px_rgba(16,185,129,0.3)]
                        hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]
                        active:scale-95">
-                    确认记录
-                  </button>
-                </div>
-
-                <!-- 滑块器 -->
-                <div class="space-y-2">
-                  <div class="flex justify-between text-xs text-gray-400/90">
-                    <span>0</span>
-                    <span>{{ maxSliderValue }}</span>
+                      确认记录
+                    </button>
                   </div>
-                  <div class="relative group">
-                    <input type="range" v-model="winAmount" :min="0" :max="maxSliderValue" step="5" class="w-full h-3 bg-white/10 rounded-lg appearance-none cursor-pointer
+
+                  <!-- 滑块器 -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-xs text-gray-400/90">
+                      <span>0</span>
+                      <span>{{ maxSliderValue }}</span>
+                    </div>
+                    <div class="relative group">
+                      <input type="range" v-model="winAmount" :min="0" :max="maxSliderValue" step="5" class="w-full h-3 bg-white/10 rounded-lg appearance-none cursor-pointer
                              focus:outline-none focus:ring-2 focus:ring-blue-500/50
                              [&::-webkit-slider-thumb]:appearance-none
                              [&::-webkit-slider-thumb]:w-6
@@ -281,53 +276,56 @@
                              [&::-webkit-slider-thumb]:transition-all
                              [&::-webkit-slider-thumb]:hover:scale-110
                              group-hover:[&::-webkit-slider-thumb]:shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                    <!-- 当前值提示 -->
-                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2
+                      <!-- 当前值提示 -->
+                      <div class="absolute -top-8 left-1/2 transform -translate-x-1/2
                                 bg-blue-500/90 text-white/90 px-2 py-1 rounded text-xs
                                 shadow-[0_0_10px_rgba(59,130,246,0.3)]
                                 transition-opacity duration-200
                                 opacity-0 group-hover:opacity-100">
-                      {{ winAmount }}
+                        {{ winAmount }}
+                      </div>
                     </div>
-                  </div>
-                  <!-- 快速选择按钮 -->
-                  <div class="flex gap-2 mt-2">
-                    <button v-for="value in quickSelectValues" :key="value" @click="handleQuickSelect(value)" class="flex-1 px-2 py-1 text-xs rounded-lg
+                    <!-- 快速选择按钮 -->
+                    <div class="flex gap-2 mt-2">
+                      <button v-for="value in quickSelectValues" :key="value" @click="handleQuickSelect(value)" class="flex-1 px-2 py-1 text-xs rounded-lg
                              bg-white/10 hover:bg-white/20 text-gray-300/90
                              transition-all duration-200
                              border border-white/10
                              hover:border-white/20">
-                      {{ value }}
-                    </button>
+                        {{ value }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- 分数预览 -->
-            <div v-if="previewScores.length > 0" class="space-y-3">
-              <label class="block text-sm font-medium text-gray-300/90">分数预览</label>
-              <div class="flex flex-wrap gap-2">
-                <div v-for="(score, index) in previewScores" :key="index"
-                  class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 flex-1 min-w-[120px]">
-                  <span class="text-sm text-gray-400">{{ players[index].name }}</span>
-                  <span class="text-base font-medium ml-auto" :class="score >= 0
-                    ? 'text-emerald-400 drop-shadow-[0_0_2px_rgba(52,211,153,0.2)]'
-                    : 'text-rose-400 drop-shadow-[0_0_2px_rgba(251,113,133,0.2)]'">
-                    {{ score >= 0 ? '+' + score : score }}
-                  </span>
+              <!-- 分数预览 -->
+              <div v-if="previewScores.length > 0" class="space-y-3">
+                <label class="block text-sm font-medium text-gray-300/90">分数预览</label>
+                <div class="flex flex-wrap gap-2">
+                  <div v-for="(score, index) in previewScores" :key="index"
+                    class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 flex-1 min-w-[120px]">
+                    <span class="text-sm text-gray-400">{{ players[index].name }}</span>
+                    <span class="text-base font-medium ml-auto" :class="score >= 0
+                      ? 'text-emerald-400 drop-shadow-[0_0_2px_rgba(52,211,153,0.2)]'
+                      : 'text-rose-400 drop-shadow-[0_0_2px_rgba(251,113,133,0.2)]'">
+                      {{ score >= 0 ? '+' + score : score }}
+                    </span>
+                  </div>
                 </div>
+
               </div>
 
+              <p class="text-xs sm:text-sm text-gray-400/90">
+                庄家{{ selectedWinner === banker ? '赢' : '输' }}分将额外{{ selectedWinner === banker ? '得到' : '扣除' }}基础分({{
+                  baseScore }}元)
+              </p>
             </div>
-
-            <p class="text-xs sm:text-sm text-gray-400/90">
-              庄家{{ selectedWinner === banker ? '赢' : '输' }}分将额外{{ selectedWinner === banker ? '得到' : '扣除' }}基础分({{
-                baseScore }}元)
-            </p>
           </div>
         </div>
       </div>
+      <!-- 记分表单 - 优化质感 -->
+
 
       <!-- 历史记录 - 优化质感 -->
       <div class="mt-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl p-4 sm:p-6
@@ -464,6 +462,13 @@ const previewScores = ref<number[]>([])
 const history = ref<Record[]>([])
 const showSettings = ref(false)
 const autoCycleBanker = ref(true)
+
+
+function closeTheScoringPopUpWindow(value?: boolean | Event) {
+  if (typeof value === 'boolean' || (value instanceof Event && (value.target as HTMLElement).id === 'edit_dialog')) {
+    selectedWinner.value = null
+  }
+}
 
 // 监听数据变化，自动保存
 watch(
